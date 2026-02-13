@@ -37,6 +37,13 @@ const App = {
     const grid = document.getElementById('tile-grid');
     grid.innerHTML = '';
 
+    if (this.pinnedData.length === 0) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 24px; font-size: 14px;';
+      empty.textContent = 'Click + to pin your favorite bookmarks';
+      grid.appendChild(empty);
+    }
+
     this.pinnedData.forEach(item => {
       const tile = document.createElement('a');
       tile.className = 'tile';

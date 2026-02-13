@@ -7,9 +7,38 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div id="app">
-    <h1>Dia Home</h1>
+  <!-- Search -->
+  <div class="search-container">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" class="search-input" placeholder="Search bookmarks..." autofocus>
+    <div class="search-results"></div>
   </div>
+
+  <!-- Bookmark Grid -->
+  <div class="tile-grid" id="tile-grid"></div>
+
+  <!-- Right-click Context Menu -->
+  <div class="context-menu" id="context-menu">
+    <div class="context-menu-item danger" id="ctx-remove">Remove from Home</div>
+  </div>
+
+  <!-- Bookmark Picker Modal -->
+  <div class="modal-overlay" id="picker-overlay">
+    <div class="modal" id="picker-modal">
+      <div class="modal-header">
+        <h2>Add Bookmark</h2>
+        <button class="modal-close" id="picker-close">&times;</button>
+      </div>
+      <div class="modal-filter">
+        <input type="text" id="picker-filter" placeholder="Filter bookmarks...">
+      </div>
+      <div class="modal-body" id="picker-body"></div>
+    </div>
+  </div>
+
   <script src="js/storage.js"></script>
   <script src="js/bookmarks.js"></script>
   <script src="js/app.js"></script>

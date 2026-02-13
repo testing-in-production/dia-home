@@ -72,4 +72,154 @@ const App = {
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => App.init());
+const Picker = {
+  overlay: null,
+  modal: null,
+  body: null,
+  filterInput: null,
+  tree: null,
+
+  setup() {
+    this.overlay = document.getElementById('picker-overlay');
+    this.modal = document.getElementById('picker-modal');
+    this.body = document.getElementById('picker-body');
+    this.filterInput = document.getElementById('picker-filter');
+
+    document.getElementById('picker-close').addEventListener('click', () => this.close());
+    this.overlay.addEventListener('click', (e) => {
+      if (e.target === this.overlay) this.close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.overlay.classList.contains('visible')) this.close();
+    });
+    this.filterInput.addEventListener('input', () => this.applyFilter());
+  },
+
+  async open() {
+    this.tree = await Bookmarks.getTree();
+    this.render();
+    this.overlay.classList.add('visible');
+    this.filterInput.value = '';
+    this.filterInput.focus();
+  },
+
+  close() {
+    this.overlay.classList.remove('visible');
+  },
+
+  render() {
+    this.body.innerHTML = '';
+    const roots = this.tree[0].children || [];
+    roots.forEach(node => {
+      const el = this.buildNode(node);
+      if (el) this.body.appendChild(el);
+    });
+  },
+
+  buildNode(node) {
+    if (node.url) {
+      return this.buildBookmarkRow(node);
+    }
+    if (node.children && node.children.length > 0) {
+      return this.buildFolder(node);
+    }
+    return null;
+  },
+
+  buildFolder(folder) {
+    const div = document.createElement('div');
+    div.className = 'tree-folder';
+    div.dataset.folderTitle = (folder.title || '').toLowerCase();
+
+    const header = document.createElement('div');
+    header.className = 'tree-folder-header';
+
+    const arrow = document.createElement('span');
+    arrow.className = 'tree-folder-arrow';
+    arrow.textContent = '\u25BC';
+
+    const name = document.createElement('span');
+    name.textContent = folder.title || 'Untitled';
+
+    header.appendChild(arrow);
+    header.appendChild(name);
+    header.addEventListener('click', () => div.classList.toggle('collapsed'));
+
+    const children = document.createElement('div');
+    children.className = 'tree-folder-children';
+
+    (folder.children || []).forEach(child => {
+      const childEl = this.buildNode(child);
+      if (childEl) children.appendChild(childEl);
+    });
+
+    if (children.children.length === 0) return null;
+
+    div.appendChild(header);
+    div.appendChild(children);
+    return div;
+  },
+
+  buildBookmarkRow(bookmark) {
+    const row = document.createElement('div');
+    row.className = 'tree-bookmark';
+    row.dataset.title = (bookmark.title || '').toLowerCase();
+    row.dataset.url = (bookmark.url || '').toLowerCase();
+    row.dataset.bookmarkId = bookmark.id;
+
+    const img = document.createElement('img');
+    img.src = Bookmarks.getFaviconUrl(bookmark.url);
+    img.alt = '';
+
+    const title = document.createElement('span');
+    title.className = 'tree-bookmark-title';
+    title.textContent = bookmark.title || bookmark.url;
+
+    const btn = document.createElement('button');
+    btn.className = 'tree-bookmark-action';
+    const isPinned = App.pinnedData.some(p => p.id === bookmark.id);
+    if (isPinned) {
+      btn.textContent = '\u2713';
+      btn.classList.add('pinned');
+    } else {
+      btn.textContent = '+ Add';
+      btn.addEventListener('click', async () => {
+        await Storage.addPin(bookmark.id);
+        await App.loadPinnedBookmarks();
+        App.renderGrid();
+        App.setupAddButton();
+        btn.textContent = '\u2713';
+        btn.classList.add('pinned');
+        btn.replaceWith(btn.cloneNode(true)); // Remove listener
+      });
+    }
+
+    row.appendChild(img);
+    row.appendChild(title);
+    row.appendChild(btn);
+    return row;
+  },
+
+  applyFilter() {
+    const query = this.filterInput.value.toLowerCase().trim();
+    const bookmarks = this.body.querySelectorAll('.tree-bookmark');
+    const folders = this.body.querySelectorAll('.tree-folder');
+
+    bookmarks.forEach(row => {
+      const matchTitle = row.dataset.title.includes(query);
+      const matchUrl = row.dataset.url.includes(query);
+      row.style.display = (matchTitle || matchUrl || !query) ? '' : 'none';
+    });
+
+    folders.forEach(folder => {
+      const visibleChildren = folder.querySelectorAll('.tree-bookmark:not([style*="display: none"])');
+      folder.style.display = visibleChildren.length > 0 ? '' : 'none';
+      if (query) folder.classList.remove('collapsed');
+    });
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  Picker.setup();
+  App.init();
+});

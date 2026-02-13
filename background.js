@@ -4,15 +4,8 @@
 
 const NEWTAB_URL = chrome.runtime.getURL('newtab.html');
 
-chrome.tabs.onCreated.addListener((tab) => {
-  // If the tab has a pendingUrl, it's navigating to a specific page
-  // (e.g. Cmd+click a link) — don't intercept
-  if (tab.pendingUrl) {
-    return;
-  }
-
-  // Only redirect genuinely blank new tabs
-  if (!tab.url || tab.url === '' || tab.url === 'chrome://newtab/') {
-    chrome.tabs.update(tab.id, { url: NEWTAB_URL });
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.url && (changeInfo.url.startsWith('chrome://start-page/') || changeInfo.url === 'chrome://newtab/')) {
+    chrome.tabs.update(tabId, { url: NEWTAB_URL });
   }
 });

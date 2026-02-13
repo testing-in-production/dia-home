@@ -34,7 +34,7 @@ This extension was ~99% written by Claude (AI). I provided the vibes, the opinio
 5. Select the cloned `dia-home` directory
 6. Open a new tab — you should see Dia Home
 
-> **Note:** Dia browser overrides `chrome_url_overrides.newtab`, so this extension uses a background service worker to redirect new tabs to the extension page. We figured this out the hard way so you don't have to.
+> **Note:** Dia browser ignores `chrome_url_overrides.newtab` and instead navigates new tabs to its internal `chrome://start-page/` URL. This extension uses a background service worker that intercepts that navigation and redirects to the extension page. We figured this out the hard way so you don't have to.
 
 ## Usage
 

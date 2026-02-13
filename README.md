@@ -1,9 +1,14 @@
 # Dia Home
 
-A Chrome extension that replaces the new tab page in [Dia browser](https://dia.com) with a curated, searchable grid of pinned bookmarks.
+A Chrome extension that replaces the new tab page in [Dia browser](https://dia.com) with a curated, searchable grid of pinned bookmarks — basically Safari's new tab experience, but for Dia. Because I switched browsers and immediately missed having my bookmarks front and center every time I opened a tab.
 
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
+![Vibe Coded](https://img.shields.io/badge/Vibe-Coded-blueviolet)
+
+## Disclaimer
+
+This extension was ~99% written by Claude (AI). I provided the vibes, the opinions on color palettes ("too purple"), and the rigorous QA process of clicking buttons and saying "looks awesome." I am not entirely sure how half of this works, but I *am* sure it works. Probably. If it doesn't, see below.
 
 ## Features
 
@@ -26,7 +31,7 @@ A Chrome extension that replaces the new tab page in [Dia browser](https://dia.c
 5. Select the cloned `dia-home` directory
 6. Open a new tab — you should see Dia Home
 
-> **Note:** Dia browser overrides `chrome_url_overrides.newtab`, so this extension uses a background service worker to redirect new tabs to the extension page.
+> **Note:** Dia browser overrides `chrome_url_overrides.newtab`, so this extension uses a background service worker to redirect new tabs to the extension page. We figured this out the hard way so you don't have to.
 
 ## Usage
 
@@ -37,7 +42,7 @@ A Chrome extension that replaces the new tab page in [Dia browser](https://dia.c
 
 ## Architecture
 
-Vanilla HTML/CSS/JS — no build step, no dependencies.
+Vanilla HTML/CSS/JS — no build step, no dependencies. Just vibes and `chrome.bookmarks`.
 
 ```
 dia-home/
@@ -59,6 +64,10 @@ dia-home/
 ## Compatibility
 
 Built for [Dia browser](https://dia.com) (Chromium-based). Should also work in Chrome and other Chromium browsers, though the background service worker redirect may not be necessary in browsers that honor `chrome_url_overrides.newtab`.
+
+## Feedback
+
+I'm very open to feedback — issues, PRs, strongly worded opinions about my color choices — all welcome. This is genuinely a learning-in-public situation, so if something is broken, dumb, or could be better, please tell me. I promise not to take it personally (my AI coworker might, though).
 
 ## License
 

@@ -63,6 +63,7 @@ const App = {
     addTile.id = 'add-tile';
     addTile.textContent = '+';
     grid.appendChild(addTile);
+    ContextMenu.attachToTiles();
   },
 
   setupAddButton() {
@@ -219,7 +220,51 @@ const Picker = {
   }
 };
 
+const ContextMenu = {
+  menu: null,
+  activeBookmarkId: null,
+
+  setup() {
+    this.menu = document.getElementById('context-menu');
+
+    document.getElementById('ctx-remove').addEventListener('click', async () => {
+      if (this.activeBookmarkId) {
+        await Storage.removePin(this.activeBookmarkId);
+        await App.loadPinnedBookmarks();
+        App.renderGrid();
+        App.setupAddButton();
+      }
+      this.hide();
+    });
+
+    document.addEventListener('click', () => this.hide());
+    document.addEventListener('contextmenu', (e) => {
+      if (!e.target.closest('.tile[data-bookmark-id]')) {
+        this.hide();
+      }
+    });
+  },
+
+  attachToTiles() {
+    document.querySelectorAll('.tile[data-bookmark-id]').forEach(tile => {
+      tile.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        this.activeBookmarkId = tile.dataset.bookmarkId;
+        this.menu.style.left = e.clientX + 'px';
+        this.menu.style.top = e.clientY + 'px';
+        this.menu.classList.add('visible');
+      });
+    });
+  },
+
+  hide() {
+    this.menu.classList.remove('visible');
+    this.activeBookmarkId = null;
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   Picker.setup();
+  ContextMenu.setup();
   App.init();
 });

@@ -14,10 +14,13 @@ This extension was ~99% written by Claude (AI). I provided the vibes, the opinio
 
 - **Pinned Bookmarks Grid** — Pin your most-used bookmarks as tiles on the new tab page
 - **Bookmark Picker** — Browse your full bookmark tree to add pins
+- **Address Bar** — Type a URL and press Enter to navigate, or search the web — works like an omnibox
 - **Search** — Search across all bookmarks with keyboard navigation (Arrow keys + Enter)
+- **Rename Bookmarks** — Right-click a tile to rename it
 - **Right-click to Remove** — Context menu to unpin bookmarks
+- **Search Engine Toggle** — Switch between Google and DuckDuckGo (click the toggle in the search bar)
 - **Dark Theme** — Clean, neutral dark interface
-- **Sync Storage** — Pinned bookmarks sync across devices via `chrome.storage.sync`
+- **Sync Storage** — Pinned bookmarks and preferences sync across devices via `chrome.storage.sync`
 
 ## Installation
 
@@ -35,9 +38,13 @@ This extension was ~99% written by Claude (AI). I provided the vibes, the opinio
 
 ## Usage
 
+- **Navigate:** Type a URL in the search bar and press Enter to go directly to it
+- **Search the web:** Type anything that isn't a URL and press Enter to search with your preferred engine
+- **Search bookmarks:** Start typing to see matching bookmarks in a dropdown, use arrow keys to navigate, press Enter to open
 - **Add bookmarks:** Click the `+` tile to open the bookmark picker, then click `+ Add` next to any bookmark
 - **Remove bookmarks:** Right-click a tile and select "Remove from Home"
-- **Search:** Type in the search bar to find any bookmark, use arrow keys to navigate, press Enter to open
+- **Rename bookmarks:** Right-click a tile and select "Rename"
+- **Switch search engine:** Click the engine name (Google/DuckDuckGo) inside the search bar to toggle
 - **Filter in picker:** Use the filter input in the picker modal to narrow down bookmarks
 
 ## Architecture

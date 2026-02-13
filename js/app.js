@@ -234,6 +234,22 @@ const ContextMenu = {
   setup() {
     this.menu = document.getElementById('context-menu');
 
+    document.getElementById('ctx-rename').addEventListener('click', async () => {
+      if (this.activeBookmarkId) {
+        const bookmark = await Bookmarks.getById(this.activeBookmarkId);
+        if (bookmark) {
+          const newTitle = prompt('Rename bookmark:', bookmark.title);
+          if (newTitle !== null && newTitle.trim()) {
+            await chrome.bookmarks.update(this.activeBookmarkId, { title: newTitle.trim() });
+            await App.loadPinnedBookmarks();
+            App.renderGrid();
+            App.setupAddButton();
+          }
+        }
+      }
+      this.hide();
+    });
+
     document.getElementById('ctx-remove').addEventListener('click', async () => {
       if (this.activeBookmarkId) {
         await Storage.removePin(this.activeBookmarkId);

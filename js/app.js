@@ -270,12 +270,18 @@ const ContextMenu = {
   }
 };
 
+const SEARCH_ENGINES = {
+  google: { name: 'Google', url: 'https://www.google.com/search?q=' },
+  duckduckgo: { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
+};
+
 const Search = {
   input: null,
   results: null,
   items: [],
   selectedIndex: -1,
   debounceTimer: null,
+  searchEngine: 'google',
 
   setup() {
     this.input = document.querySelector('.search-input');
@@ -324,6 +330,28 @@ const Search = {
         this.results.classList.add('visible');
       }
     });
+
+    // Load search engine preference
+    Storage.getSettings().then(settings => {
+      this.searchEngine = settings.searchEngine || 'google';
+      this.updateEngineButton();
+    });
+
+    // Search engine toggle button
+    this.engineBtn = document.getElementById('search-engine-toggle');
+    this.engineBtn.addEventListener('click', async () => {
+      const keys = Object.keys(SEARCH_ENGINES);
+      const currentIndex = keys.indexOf(this.searchEngine);
+      this.searchEngine = keys[(currentIndex + 1) % keys.length];
+      await Storage.saveSetting('searchEngine', this.searchEngine);
+      this.updateEngineButton();
+    });
+  },
+
+  updateEngineButton() {
+    const engine = SEARCH_ENGINES[this.searchEngine] || SEARCH_ENGINES.google;
+    this.engineBtn.textContent = engine.name;
+    this.engineBtn.title = 'Search with ' + engine.name + ' (click to switch)';
   },
 
   async doSearch() {
@@ -409,8 +437,9 @@ const Search = {
     if (/^https?:\/\//i.test(value)) return value;
     // Looks like a domain (has dot, no spaces)
     if (/^[^\s]+\.[^\s]+$/.test(value)) return 'https://' + value;
-    // Treat as Google search
-    return 'https://www.google.com/search?q=' + encodeURIComponent(value);
+    // Use configured search engine
+    const engine = SEARCH_ENGINES[this.searchEngine] || SEARCH_ENGINES.google;
+    return engine.url + encodeURIComponent(value);
   }
 };
 

@@ -35,6 +35,20 @@ const Storage = {
     return pinned.some(p => p.id === bookmarkId);
   },
 
+  SETTINGS_KEY: 'settings',
+
+  async getSettings() {
+    const data = await chrome.storage.sync.get(this.SETTINGS_KEY);
+    return data[this.SETTINGS_KEY] || { searchEngine: 'google' };
+  },
+
+  async saveSetting(key, value) {
+    const settings = await this.getSettings();
+    settings[key] = value;
+    await chrome.storage.sync.set({ [this.SETTINGS_KEY]: settings });
+    return settings;
+  },
+
   async removeStaleIds(validIds) {
     let pinned = await this.getPinned();
     const before = pinned.length;

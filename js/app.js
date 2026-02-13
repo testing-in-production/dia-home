@@ -287,6 +287,20 @@ const Search = {
     });
 
     this.input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        // If a search result is selected, navigate to it
+        if (this.results.classList.contains('visible') && this.selectedIndex >= 0 && this.items[this.selectedIndex]) {
+          window.location.href = this.items[this.selectedIndex].url;
+          return;
+        }
+        // Otherwise, treat input as a URL or search
+        const value = this.input.value.trim();
+        if (value) {
+          window.location.href = this.toNavigableUrl(value);
+        }
+        return;
+      }
       if (!this.results.classList.contains('visible')) return;
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -296,11 +310,6 @@ const Search = {
         e.preventDefault();
         this.selectedIndex = Math.max(this.selectedIndex - 1, 0);
         this.highlightSelected();
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (this.selectedIndex >= 0 && this.items[this.selectedIndex]) {
-          window.location.href = this.items[this.selectedIndex].url;
-        }
       }
     });
 
@@ -393,6 +402,15 @@ const Search = {
     this.results.classList.remove('visible');
     this.items = [];
     this.selectedIndex = -1;
+  },
+
+  toNavigableUrl(value) {
+    // Already a full URL
+    if (/^https?:\/\//i.test(value)) return value;
+    // Looks like a domain (has dot, no spaces)
+    if (/^[^\s]+\.[^\s]+$/.test(value)) return 'https://' + value;
+    // Treat as Google search
+    return 'https://www.google.com/search?q=' + encodeURIComponent(value);
   }
 };
 
@@ -401,4 +419,6 @@ document.addEventListener('DOMContentLoaded', () => {
   ContextMenu.setup();
   Search.setup();
   App.init();
+  // Ensure focus after background.js redirect (autofocus can be unreliable)
+  document.querySelector('.search-input').focus();
 });
